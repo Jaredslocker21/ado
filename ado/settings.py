@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY','')
+SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'DEVELOPMENT' in os.environ
@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'bag',
     'checkout',
     'profiles',
-    'crispy_forms'
+    'crispy_forms',
+    'storages',
 
 ]
 
@@ -175,6 +176,25 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+if 'USE_AWS' in os.environ:
+    # bucket config
+    AWS_STORAGE_BUCKET_NAME = 'walkthrough.ado'
+    AWS_S3__REGION_NAME = 'eu-north-1'
+    AWS_ACCESS_EKY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    AWS_S3CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazon.com'
+
+    # static and media file storage
+    STATICFILE_STORAGE = 'custom_storages.StaticStorage'
+    STATIC_FILES_LOCATION = 'static'
+    DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
+    MEDIA_FILES_LOCATION = 'media'
+
+    # Override static and media URLS in production
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_FILES_LOCATION}/'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
